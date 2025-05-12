@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Effect with Links</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Space Mono', monospace;
+        }
+        .container {
+            width: 80%;
+            max-width: 650px;
+            color: #e9638b;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+        #text-display p {
+            margin: 0;
+            padding: 0;
+        }
+        .line-break {
+            display: block;
+            height: 1.2em;
+            content: " ";
+        }
+        a {
+            color: #e9638b;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        a:hover {
+            color: #ff85b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="text-display"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textDisplay = document.getElementById('text-display');
+            
+            const messages = [
+                "ssss.",
+                "", 
+                "vasss {ssss:https://example.com} sssk.",
+                "", 
+            ];
+            
+            let messageIndex = 0;
+            let charIndex = 0;
+            let currentParagraph = null;
+            let linkBuffer = null;
+            
+            function type() {
+                if (messageIndex < messages.length) {
+                    const currentMessage = messages[messageIndex];
+                    
+                    if (currentMessage === "") {
+                    
+                        const br = document.createElement('div');
+                        br.className = 'line-break';
+                        textDisplay.appendChild(br);
+                        messageIndex++;
+                        setTimeout(type, 150);
+                    } 
+                    else if (charIndex === 0) {
+                       
+                        currentParagraph = document.createElement('p');
+                        textDisplay.appendChild(currentParagraph);
+                        charIndex++;
+                        type();
+                    }
+                    else if (charIndex < currentMessage.length) {
+                       
+                        if (currentMessage.charAt(charIndex) === '{' && !linkBuffer) {
+                            linkBuffer = {
+                                text: '',
+                                url: '',
+                                stage: 'text' 
+                            };
+                            charIndex++;
+                        }
+                        else if (currentMessage.charAt(charIndex) === '}' && linkBuffer) {
+                            // Insert completed link
+                            const a = document.createElement('a');
+                            a.href = linkBuffer.url;
+                            a.textContent = linkBuffer.text;
+                            currentParagraph.appendChild(a);
+                            linkBuffer = null;
+                            charIndex++;
+                        }
+                        else if (currentMessage.charAt(charIndex) === ':' && linkBuffer?.stage === 'text') {
+                            linkBuffer.stage = 'url';
+                            charIndex++;
+                        }
+                        else if (linkBuffer) {
+                         
+                            if (linkBuffer.stage === 'text') {
+                                linkBuffer.text += currentMessage.charAt(charIndex);
+                            } else {
+                                linkBuffer.url += currentMessage.charAt(charIndex);
+                            }
+                            charIndex++;
+                        }
+                        else {
+                       
+                            const textNode = document.createTextNode(currentMessage.charAt(charIndex));
+                            currentParagraph.appendChild(textNode);
+                            charIndex++;
+                        }
+                        
+                        setTimeout(type, 40);
+                    } 
+                    else {
+                      
+                        messageIndex++;
+                        charIndex = 0;
+                        setTimeout(type, 400);
+                    }
+                }
+            }
+            
+            // Start animation
+            type();
+        });
+    </script>
+</body>
+</html>
