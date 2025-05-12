@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Effect with Links</title>
+    <title>welcome to loket :)</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
     <style>
         body {
@@ -21,12 +21,12 @@
             max-width: 650px;
             color: #e9638b;
             font-size: 18px;
-            line-height: 1.4;
+            line-height: 1.2; 
         }
         #text-display p {
-            margin: 0;
+            margin: 0 0 0.6em 0; /
             padding: 0;
-        }
+                }
         .line-break {
             display: block;
             height: 1.2em;
@@ -46,16 +46,15 @@
     <div class="container">
         <div id="text-display"></div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const textDisplay = document.getElementById('text-display');
             
             const messages = [
-                "ssss.",
-                "", 
-                "vasss {ssss:https://example.com} sssk.",
-                "", 
+                "user: loket / password: *****",
+                "",
+                "welcome to loket! a private {discord:https://discord.com} roleplay ♡",
+                "in loket, we're all about the low-maintenance roleplaying. loket was created on the basis of a non-overwhelming space to roleplay and connect with friends.",
             ];
             
             let messageIndex = 0;
@@ -93,7 +92,7 @@
                             charIndex++;
                         }
                         else if (currentMessage.charAt(charIndex) === '}' && linkBuffer) {
-                            // Insert completed link
+                        
                             const a = document.createElement('a');
                             a.href = linkBuffer.url;
                             a.textContent = linkBuffer.text;
@@ -131,8 +130,6 @@
                     }
                 }
             }
-            
-            // Start animation
             type();
         });
     </script>
