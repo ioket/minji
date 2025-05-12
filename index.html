@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>welcome to loket :)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Typing Effect with Smooth Links</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
     <style>
         body {
@@ -21,16 +21,11 @@
             max-width: 650px;
             color: #e9638b;
             font-size: 18px;
-            line-height: 1.2; 
+            line-height: 1.4;
         }
         #text-display p {
-            margin: 0 0 0.6em 0; /
+            margin: 0;
             padding: 0;
-                }
-        .line-break {
-            display: block;
-            height: 1.2em;
-            content: " ";
         }
         a {
             color: #e9638b;
@@ -46,90 +41,86 @@
     <div class="container">
         <div id="text-display"></div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const textDisplay = document.getElementById('text-display');
-            
+
             const messages = [
-                "user: loket / password: *****",
+                "Here's a working {Google:https://google.com}.",
                 "",
-                "welcome to loket! a private {discord:https://discord.com} roleplay ♡",
-                "in loket, we're all about the low-maintenance roleplaying. loket was created on the basis of a non-overwhelming space to roleplay and connect with friends.",
+                "Email me at {Email:mailto:test@example.com}",
+                "", 
+                "Regular text still works perfectly."
             ];
-            
+
             let messageIndex = 0;
             let charIndex = 0;
             let currentParagraph = null;
-            let linkBuffer = null;
-            
+            let currentLink = null;
+            let parsingLink = false;
+            let isParsingText = true;
+
             function type() {
-                if (messageIndex < messages.length) {
-                    const currentMessage = messages[messageIndex];
-                    
-                    if (currentMessage === "") {
-                    
-                        const br = document.createElement('div');
-                        br.className = 'line-break';
-                        textDisplay.appendChild(br);
-                        messageIndex++;
-                        setTimeout(type, 150);
-                    } 
-                    else if (charIndex === 0) {
-                       
-                        currentParagraph = document.createElement('p');
-                        textDisplay.appendChild(currentParagraph);
-                        charIndex++;
-                        type();
+                if (messageIndex >= messages.length) return;
+
+                const msg = messages[messageIndex];
+
+                if (msg === "") {
+                    currentParagraph = document.createElement('p');
+                    textDisplay.appendChild(currentParagraph);
+                    messageIndex++;
+                    charIndex = 0;
+                    setTimeout(type, 200);
+                    return;
+                }
+
+                if (!currentParagraph) {
+                    currentParagraph = document.createElement('p');
+                    textDisplay.appendChild(currentParagraph);
+                }
+
+                const char = msg.charAt(charIndex);
+
+                if (char === '{' && !parsingLink) {
+                    parsingLink = true;
+                    isParsingText = true;
+                    currentLink = {
+                        text: "",
+                        url: "",
+                        node: document.createElement('a')
+                    };
+                    currentLink.node.href = "#"; // Temporary
+                    currentParagraph.appendChild(currentLink.node);
+                } else if (char === '}' && parsingLink) {
+                    currentLink.node.href = currentLink.url;
+                    currentLink = null;
+                    parsingLink = false;
+                } else if (char === ':' && parsingLink && isParsingText) {
+                    isParsingText = false;
+                } else if (parsingLink) {
+                    if (isParsingText) {
+                        currentLink.text += char;
+                        currentLink.node.textContent += char;
+                    } else {
+                        currentLink.url += char;
                     }
-                    else if (charIndex < currentMessage.length) {
-                       
-                        if (currentMessage.charAt(charIndex) === '{' && !linkBuffer) {
-                            linkBuffer = {
-                                text: '',
-                                url: '',
-                                stage: 'text' 
-                            };
-                            charIndex++;
-                        }
-                        else if (currentMessage.charAt(charIndex) === '}' && linkBuffer) {
-                        
-                            const a = document.createElement('a');
-                            a.href = linkBuffer.url;
-                            a.textContent = linkBuffer.text;
-                            currentParagraph.appendChild(a);
-                            linkBuffer = null;
-                            charIndex++;
-                        }
-                        else if (currentMessage.charAt(charIndex) === ':' && linkBuffer?.stage === 'text') {
-                            linkBuffer.stage = 'url';
-                            charIndex++;
-                        }
-                        else if (linkBuffer) {
-                         
-                            if (linkBuffer.stage === 'text') {
-                                linkBuffer.text += currentMessage.charAt(charIndex);
-                            } else {
-                                linkBuffer.url += currentMessage.charAt(charIndex);
-                            }
-                            charIndex++;
-                        }
-                        else {
-                       
-                            const textNode = document.createTextNode(currentMessage.charAt(charIndex));
-                            currentParagraph.appendChild(textNode);
-                            charIndex++;
-                        }
-                        
-                        setTimeout(type, 40);
-                    } 
-                    else {
-                      
-                        messageIndex++;
-                        charIndex = 0;
-                        setTimeout(type, 400);
-                    }
+                } else {
+                    currentParagraph.appendChild(document.createTextNode(char));
+                }
+
+                charIndex++;
+
+                if (charIndex >= msg.length) {
+                    messageIndex++;
+                    charIndex = 0;
+                    currentParagraph = null;
+                    setTimeout(type, 500);
+                } else {
+                    setTimeout(type, 40);
                 }
             }
+
             type();
         });
     </script>
